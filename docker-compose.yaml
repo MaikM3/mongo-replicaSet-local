@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mongo1:
+    container_name: mongo1
+    image: mongo:6-focal
+    volumes:
+      - ~/mongors/data1:/data/db
+    networks:
+      mongors-network:
+        aliases:
+          - mongo1
+    ports:
+      - 27018:27017
+    links:
+      - mongo2
+      - mongo3
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip", "localhost,mongo1", "--replSet", "myReplicaSet" ]
+  mongo2:
+    container_name: mongo2
+    image: mongo:6-focal
+    volumes:
+      - ~/mongors/data2:/data/db
+    networks:
+      mongors-network:
+        aliases:
+          - mongo2
+    ports:
+      - 27019:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip", "localhost,mongo2", "--replSet", "myReplicaSet"]
+  mongo3:
+    container_name: mongo3
+    image: mongo:6-focal
+    volumes:
+      - ~/mongors/data3:/data/db
+    networks:
+      mongors-network:
+        aliases:
+          - mongo3
+    ports:
+      - 27020:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip", "localhost,mongo3", "--replSet", "myReplicaSet"]
+
+networks:
+  mongors-network:
+    driver: bridge
